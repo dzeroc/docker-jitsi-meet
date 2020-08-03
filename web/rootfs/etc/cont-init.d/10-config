@@ -2,7 +2,7 @@
 
 # make our folders
 mkdir -p \
-    /config/{nginx/site-confs,keys} \
+    /config/{nginx/site-confs,keys,nginx/modules-enabled} \
     /run \
     /var/lib/nginx/tmp/client_body \
     /var/tmp/nginx
@@ -119,7 +119,9 @@ if [[ ! -f /config/config.js ]]; then
         sed -i \
              -e "s#// useStunTurn:.*,#useStunTurn: true,#" \
              /config/config.js
-    	tpl /defaults/modules-enabled/50-turn-stream.conf > /config/nginx/modules-enabled/50-turn-stream.conf
+    	if [[ $TURN_443_PORT_ENABLE -eq 1 || "$TURN_443_PORT_ENABLE" == "true" ]]; then
+	    if [[ ! -f  /config/nginx/modules-enabled/50-turn-stream.conf ]]; then
+i	        tpl /defaults/modules-enabled/50-turn-stream.conf > /config/nginx/modules-enabled/50-turn-stream.conf
     fi
 
 fi

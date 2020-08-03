@@ -7,16 +7,20 @@ plugin_paths = { "/prosody-plugins/", "/prosody-plugins-custom" }
 http_default_host = "{{ .Env.XMPP_DOMAIN }}"
 
 {{ $ENABLE_AUTH := .Env.ENABLE_AUTH | default "0" | toBool }}
-{{ $TURN_ENABLE := .Env.TURN_ENABLE | default "0" | toBool }}
-{{ $TURN_HOST := .Env.TURN_HOST | default .Env.DOCKER_HOST_ADDRESS }}
-{{ $TURN_PORT := .Env.TURN_EXTERNAL_PORT | .Env.TURN_PORT | default "5349" }}
-{{ $STUN_PORT := .Env.STUN_PORT | default "3478" }}
 {{ $AUTH_TYPE := .Env.AUTH_TYPE | default "internal" }}
 {{ $JWT_ASAP_KEYSERVER := .Env.JWT_ASAP_KEYSERVER | default "" }}
 {{ $JWT_ALLOW_EMPTY := .Env.JWT_ALLOW_EMPTY | default "0" | toBool }}
 {{ $JWT_AUTH_TYPE := .Env.JWT_AUTH_TYPE | default "token" }}
 {{ $JWT_TOKEN_AUTH_MODULE := .Env.JWT_TOKEN_AUTH_MODULE | default "token_verification" }}
 {{ $ENABLE_LOBBY := .Env.ENABLE_LOBBY | default "0" | toBool }}
+
+{{ $TURN_ENABLE := .Env.TURN_ENABLE | default "0" | toBool }}
+{{ $TURN_HOST := .Env.TURN_HOST | default .Env.DOCKER_HOST_ADDRESS }}
+{{ if .Env.TURN_443_PORT_ENABLE }} 
+{{ $TURN_PORT := "443" }} 
+{{ else $TURN_PORT := .Env.TURN_PORT | default "5349" }}
+{{ end }}
+{{ $STUN_PORT := .Env.STUN_PORT | default "3478" }}
 
 {{ if and $ENABLE_AUTH (eq $AUTH_TYPE "jwt") .Env.JWT_ACCEPTED_ISSUERS }}
 asap_accepted_issuers = { "{{ join "\",\"" (splitList "," .Env.JWT_ACCEPTED_ISSUERS) }}" }

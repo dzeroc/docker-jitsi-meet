@@ -43,6 +43,7 @@ services:
             - JIBRI_RECORDER_PASSWORD
             - ENABLE_RECORDING
             - TURN_ENABLE
+            - TURN_443_PORT_ENABLE 
         networks:
             meet.jitsi:
                 aliases:
@@ -116,6 +117,7 @@ services:
             - TURN_SECRET
             - TURN_HOST
             - TURN_PORT
+            - TURN_443_PORT_ENABLE 
             - TURN_TRANSPORT
         networks:
             meet.jitsi:
