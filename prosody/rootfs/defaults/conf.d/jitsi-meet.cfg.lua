@@ -17,10 +17,7 @@ http_default_host = "{{ .Env.XMPP_DOMAIN }}"
 
 {{ $TURN_ENABLE := .Env.TURN_ENABLE | default "0" | toBool }}
 {{ $TURN_HOST := .Env.TURN_HOST | default .Env.DOCKER_HOST_ADDRESS }}
-{{ if .Env.TURN_443_PORT_ENABLE }} 
-{{ $TURN_PORT := "443" }} 
-{{ else $TURN_PORT := .Env.TURN_PORT | default "5349" }}
-{{ end }}
+{{ $TURN_PORT := .Env.TURN_PORT | default "5349" }}
 {{ $STUN_PORT := .Env.STUN_PORT | default "3478" }}
 
 {{ if and $ENABLE_AUTH (eq $AUTH_TYPE "jwt") .Env.JWT_ACCEPTED_ISSUERS }}
@@ -73,7 +70,7 @@ VirtualHost "{{ .Env.XMPP_DOMAIN }}"
         {{ end }}
         {{ if and $ENABLE_AUTH (eq $AUTH_TYPE "ldap") }}
         "auth_cyrus";
-        {{end}}
+        {{ end }}
  
     }
 
@@ -83,7 +80,12 @@ VirtualHost "{{ .Env.XMPP_DOMAIN }}"
     turncredentials_ttl = 86400;
     turncredentials = {
         { type = "stun", host = "{{ $TURN_HOST }}", port = {{ $STUN_PORT }} },
-        { type = "turn", host = "{{ $TURN_HOST }}", port = {{ $TURN_PORT }} },
+	
+	{{ if .Env.TURN_443_PORT_ENABLE }} 
+	{ type = "turn", host = "{{ $TURN_HOST }}", port = 443 },
+	{{ else }}
+	{ type = "turn", host = "{{ $TURN_HOST }}", port = {{ $TURN_PORT }} },
+	{{ end }}	
         { type = "turns", host = "{{ $TURN_HOST }}", port = {{ $TURN_PORT }}, transport = "tcp" }
 }
 {{end}}
